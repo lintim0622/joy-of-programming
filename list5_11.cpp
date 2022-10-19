@@ -16,6 +16,6 @@ public:
 class FileLogger : public Logger {
 public:
     void log_transfer(long from, long to, double amount) override {
-        printf("[file] %ld -> %ld: %f\n", from, to, amount);
+        printf("[file] %ld, %ld, %f\n", from, to, amount);
     }
 };
