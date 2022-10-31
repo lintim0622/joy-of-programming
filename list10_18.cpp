@@ -115,11 +115,24 @@ void alert_when_imminent() {
     assert_that(brake_commands_published == 1, "brake commands published not one");
 }
 
+void no_alert_when_not_imminent() {
+    int brake_commands_published {};
+    std::function<void(const BrakeCommand& bc)> func { [&brake_commands_published](const BrakeCommand& bc) {
+        brake_commands_published++;
+    } };
+    AutoBrake<std::function<void(const BrakeCommand& bc)>> auto_brake { func };
+    auto_brake.set_collision_threshold_s(2L);
+    auto_brake.observe(SpeedUpdate{100L});
+    auto_brake.observe(CarDetected{1000L, 50L});
+    assert_that(brake_commands_published == 0, "brake commands published");
+}
+
 int main() {
     run_test(initial_speed_is_zero, "initial speed is 0");
     run_test(initial_sensitivity_is_five, "initial sensitivity is five");
     run_test(sensitivity_greater_than_1, "sensitivity greater than 1");
     run_test(speed_is_saved, "speed is saved");
     run_test(alert_when_imminent, "alert when imminent");
+    run_test(no_alert_when_not_imminent, "no alert when not imminent");
     return 0;
 }
